@@ -41,7 +41,7 @@ public class ReadymixDbHelper extends SQLiteOpenHelper {
                 + ReadymixEntry.COLUMN_READYMIX_NAME + " TEXT NOT NULL, "
                 + ReadymixEntry.COLUMN_READYMIX_PRICE + " INTEGER NOT NULL, "
                 + ReadymixEntry.COLUMN_READYMIX_QUANTITY + " INTEGER NOT NULL DEFAULT 1, "
-                // + ReadymixEntry.COLUMN_PRODUCT_IMAGE + " BLOB, "
+                + ReadymixEntry.COLUMN_PRODUCT_IMAGE + " BLOB, "
                 + ReadymixEntry.COLUMN_SUPPLIER_NAME + " TEXT, "
                 + ReadymixEntry.COLUMN_SUPPLIER_EMAIL + " TEXT, "
                 + ReadymixEntry.COLUMN_SUPPLIER_PHONE + " TEXT);";
@@ -56,5 +56,11 @@ public class ReadymixDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // The database is still at version 1, so there's nothing to do be done here.
+
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + ReadymixEntry.TABLE_NAME);
+
+        // Create tables again
+        onCreate(db);
     }
 }

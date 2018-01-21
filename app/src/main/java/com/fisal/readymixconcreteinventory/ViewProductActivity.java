@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
@@ -65,7 +68,7 @@ public class ViewProductActivity extends AppCompatActivity {
                 ReadymixEntry.COLUMN_READYMIX_NAME,
                 ReadymixEntry.COLUMN_READYMIX_PRICE,
                 ReadymixEntry.COLUMN_READYMIX_QUANTITY,
-                // ReadymixEntry.COLUMN_PRODUCT_IMAGE,
+                ReadymixEntry.COLUMN_PRODUCT_IMAGE,
                 ReadymixEntry.COLUMN_SUPPLIER_NAME,
                 ReadymixEntry.COLUMN_SUPPLIER_EMAIL,
                 ReadymixEntry.COLUMN_SUPPLIER_PHONE};
@@ -84,6 +87,7 @@ public class ViewProductActivity extends AppCompatActivity {
                 orderBy);                   // The sort order
 
         TextView displayView = (TextView) findViewById(R.id.text_view_readymix);
+        ImageView imageView = (ImageView) findViewById(R.id.view_readymix_image);
 
         try {
             // Create a header in the Text View that looks like this:
@@ -98,6 +102,7 @@ public class ViewProductActivity extends AppCompatActivity {
                     ReadymixEntry.COLUMN_READYMIX_NAME + " - " +
                     ReadymixEntry.COLUMN_READYMIX_PRICE + " - " +
                     ReadymixEntry.COLUMN_READYMIX_QUANTITY + " - " +
+                    ReadymixEntry.COLUMN_PRODUCT_IMAGE + " - " +
                     ReadymixEntry.COLUMN_SUPPLIER_NAME + " - " +
                     ReadymixEntry.COLUMN_SUPPLIER_EMAIL + " - " +
                     ReadymixEntry.COLUMN_SUPPLIER_PHONE + "\n");
@@ -107,6 +112,7 @@ public class ViewProductActivity extends AppCompatActivity {
             int pNameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_NAME);
             int priceColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_QUANTITY);
+            int imageColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_PRODUCT_IMAGE);
             int sNameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_NAME);
             int sEmailColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_EMAIL);
             int sPhoneColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_PHONE);
@@ -121,6 +127,7 @@ public class ViewProductActivity extends AppCompatActivity {
                 String currentName = cursor.getString(pNameColumnIndex);
                 int currentPrice = cursor.getInt(priceColumnIndex);
                 int currentQuantity = cursor.getInt(quantityColumnIndex);
+                byte[] currentImage = cursor.getBlob(imageColumnIndex);
                 String currentSupplierName = cursor.getString(sNameColumnIndex);
                 String currentSupplierEmail = cursor.getString(sEmailColumnIndex);
                 String currentSupplierPhone = cursor.getString(sPhoneColumnIndex);
@@ -133,12 +140,23 @@ public class ViewProductActivity extends AppCompatActivity {
                         currentSupplierName + " - " +
                         currentSupplierEmail + " - " +
                         currentSupplierPhone));
+                if (!(currentImage == null)) {
+                    imageView.setImageBitmap(convertToBitmap(currentImage));
+                } else {
+                    imageView.setImageResource(R.drawable.ic_action_add_image);
+                }
+
             }
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.
             cursor.close();
         }
+    }
+
+    //get bitmap image from byte array
+    private Bitmap convertToBitmap(byte[] currentImage) {
+        return BitmapFactory.decodeByteArray(currentImage, 0, currentImage.length);
     }
 
     /**

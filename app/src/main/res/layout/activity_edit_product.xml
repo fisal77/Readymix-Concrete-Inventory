@@ -72,6 +72,15 @@
             </RelativeLayout>
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/edit_readymix_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_action_add_image"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="centerCrop" />
+
         </LinearLayout>
     </LinearLayout>
 

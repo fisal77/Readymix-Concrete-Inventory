@@ -53,7 +53,7 @@ public final class ReadymixContract {
          *
          * Type: blob (binary)
          */
-        // public final static String COLUMN_PRODUCT_IMAGE = "image";
+         public final static String COLUMN_PRODUCT_IMAGE = "image";
 
         /**
          * Supplier name.
