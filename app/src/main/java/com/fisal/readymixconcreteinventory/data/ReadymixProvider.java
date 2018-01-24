@@ -179,11 +179,6 @@ public class ReadymixProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
-    }
-
-    @Override
     public int update(Uri uri, ContentValues contentValues, String selection,
                       String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
@@ -255,5 +250,25 @@ public class ReadymixProvider extends ContentProvider {
         // Returns the number of database rows affected by the update statement
         return database.update(ReadymixEntry.TABLE_NAME, values, selection, selectionArgs);
 
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        // Get writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case READYMIX:
+                // Delete all rows that match the selection and selection args
+                return database.delete(ReadymixEntry.TABLE_NAME, selection,selectionArgs);
+            case READYMIX_ID:
+                // Delete a single row given by the ID in the URI
+                selection = ReadymixEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return database.delete(ReadymixEntry.TABLE_NAME, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
     }
 }
