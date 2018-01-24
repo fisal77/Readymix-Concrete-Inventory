@@ -111,6 +111,19 @@ public final class ReadymixContract {
         public static final String UBINTO_SUPPLIER = "Ubinto";
         public static final String BINLADEN_SUPPLIER = "Bin Laden Co.";
 
+        /**
+         * Returns whether or not the given supplier is {@link #OTHER_SUPPLIER}, {@link #SRMCC_SUPPLIER},
+         * or {@link #CEMEX_SUPPLIER} or....so on....
+         */
+        public static boolean isCorrectSupplier(String supplier) {
+            if (supplier.equals(OTHER_SUPPLIER) || supplier.equals(SRMCC_SUPPLIER) ||
+                    supplier.equals(CEMEX_SUPPLIER) || supplier.equals(UBINTO_SUPPLIER)
+                    || supplier.equals(BINLADEN_SUPPLIER)) {
+                return true;
+            }
+            return false;
+        }
+
     }
 
 }

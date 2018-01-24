@@ -130,6 +130,31 @@ public class ReadymixProvider extends ContentProvider {
      * for that specific row in the database.
      */
     private Uri insertReadymix(Uri uri, ContentValues values) {
+
+        // Check that the product name is not null
+        String name = values.getAsString(ReadymixEntry.COLUMN_READYMIX_NAME);
+        if (name == null) {
+            throw new IllegalArgumentException("New product required a name");
+        }
+
+        // Check that the price is not null and valid
+        Integer price = values.getAsInteger(ReadymixEntry.COLUMN_READYMIX_PRICE);
+        if (price == null || price == 0 || price < 0) {
+            throw new IllegalArgumentException("new product requires valid price");
+        }
+
+        // Check that the quantity is not null and valid
+        Integer quantity = values.getAsInteger(ReadymixEntry.COLUMN_READYMIX_QUANTITY);
+        if (quantity == null || quantity == 0 || quantity < 0) {
+            throw new IllegalArgumentException("new product requires valid quantity");
+        }
+
+        // Check that the supplier name is not null and valid
+        String supplier = values.getAsString(ReadymixEntry.COLUMN_SUPPLIER_NAME);
+        if (supplier == null && !ReadymixEntry.isCorrectSupplier(supplier)) {
+            throw new IllegalArgumentException("Pet requires valid weight");
+        }
+
         // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
