@@ -58,9 +58,6 @@ public class ViewProductActivity extends AppCompatActivity {
      * the readymix concrete database.
      */
     private void displayDatabaseInfo() {
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
@@ -76,15 +73,14 @@ public class ViewProductActivity extends AppCompatActivity {
         //How to order the rows, formatted as an SQL ORDER BY clause.
         String orderBy = ReadymixEntry.COLUMN_READYMIX_PRICE + " DESC";
 
-        // Perform a query on the readymix table
-        Cursor cursor = db.query(
-                ReadymixEntry.TABLE_NAME,   // The table to query
-                projection,            // The columns to return
-                null,                  // The columns for the WHERE clause
-                null,                  // The values for the WHERE clause
-                null,                  // Don't group the rows
-                null,                  // Don't filter by row groups
-                orderBy);                   // The sort order
+        // Perform a query on the provider using the ContentResolver.
+        // Use the {@link ReadymixEntry#CONTENT_URI} to access the readymix data.
+        Cursor cursor = getContentResolver().query(
+                ReadymixEntry.CONTENT_URI,   // The content URI of the words table
+                projection,            // The columns to return for each row
+                null,         // The columns for the WHERE clause - Selection criteria
+                null,     // The values for the WHERE clause - Selection criteria
+                orderBy);             // The sort order for the returned rows
 
         TextView displayView = (TextView) findViewById(R.id.text_view_readymix);
         ImageView imageView = (ImageView) findViewById(R.id.view_readymix_image);
