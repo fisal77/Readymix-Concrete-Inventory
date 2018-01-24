@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -24,7 +23,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
-import com.fisal.readymixconcreteinventory.data.ReadymixDbHelper;
 
 import java.io.ByteArrayOutputStream;
 
@@ -256,13 +254,6 @@ public class EditProductActivity extends AppCompatActivity {
         String supplierEmailString = mSupplierEmailEditText.getText().toString();
         String supplierPhoneString = mSupplierPhoneEditText.getText().toString();
 
-
-        // Create database helper
-        ReadymixDbHelper mDbHelper = new ReadymixDbHelper(this);
-
-        // Gets the database in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         // Create a ContentValues object where column names are the keys,
         // and readymix attributes from the editor are the values.
         ContentValues values = new ContentValues();
@@ -274,16 +265,18 @@ public class EditProductActivity extends AppCompatActivity {
         values.put(ReadymixEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
         values.put(ReadymixEntry.COLUMN_SUPPLIER_PHONE, supplierPhoneString);
 
-        // Insert a new row for readymix in the database, returning the ID of that new row.
-        long newRowId = db.insert(ReadymixEntry.TABLE_NAME, null, values);
+        // Insert a new readymix into the provider, returning the content URI for the new readymix product.
+        Uri newUri = getContentResolver().insert(ReadymixEntry.CONTENT_URI, values);
 
         // Show a toast message depending on whether or not the insertion was successful
-        if (newRowId == -1) {
-            // If the row ID is -1, then there was an error with insertion.
-            Toast.makeText(this, "Error with saving new product", Toast.LENGTH_SHORT).show();
+        if (newUri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(this, getString(R.string.editProduct_insert_new_failed),
+                    Toast.LENGTH_SHORT).show();
         } else {
-            // Otherwise, the insertion was successful and we can display a toast with the row ID.
-            Toast.makeText(this, "New product saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
+            // Otherwise, the insertion was successful and we can display a toast.
+            Toast.makeText(this, getString(R.string.editProduct_insert_new_successful),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 

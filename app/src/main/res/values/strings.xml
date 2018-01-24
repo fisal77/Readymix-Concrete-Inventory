@@ -17,4 +17,6 @@
     <string name="binladen_supplier">Bin Laden Co.</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
+    <string name="editProduct_insert_new_failed">Error with saving new readymix product</string>
+    <string name="editProduct_insert_new_successful">New readymix product saved</string>
 </resources>

@@ -3,9 +3,9 @@ package com.fisal.readymixconcreteinventory;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -17,15 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
-import com.fisal.readymixconcreteinventory.data.ReadymixDbHelper;
 
 /**
  * Displays list of readymix concrete that were entered and stored in the app.
  */
 public class ViewProductActivity extends AppCompatActivity {
-
-    /** Database helper that will provide us access to the database */
-    private ReadymixDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +37,6 @@ public class ViewProductActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        mDbHelper = new ReadymixDbHelper(this);
     }
 
     @Override
@@ -159,25 +151,20 @@ public class ViewProductActivity extends AppCompatActivity {
      * Helper method to insert hardcoded readymix data into the database. For debugging purposes only.
      */
     private void insertReadymix() {
-        // Gets the database in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // Create a ContentValues object where column names are the keys
+        // Create a ContentValues object where column names are the keys,
+        // and Fiber-reinforced's readymix product attributes are the values.
         ContentValues values = new ContentValues();
         values.put(ReadymixEntry.COLUMN_READYMIX_NAME, "Fiber-reinforced");
         values.put(ReadymixEntry.COLUMN_READYMIX_PRICE, 120);
         values.put(ReadymixEntry.COLUMN_READYMIX_QUANTITY, 300);
 
-        // Insert a new row for Fiber-reinforced in the database, returning the ID of that new row.
-        // The first argument for db.insert() is the readymix table name.
-        // The second argument provides the name of a column in which the framework
-        // can insert NULL in the event that the ContentValues is empty (if
-        // this is set to "null", then the framework will not insert a row when
-        // there are no values).
-        // The third argument is the ContentValues object containing the info for Fiber-reinforced.
-        long newRowId = db.insert(ReadymixEntry.TABLE_NAME, null, values);
+        // Insert a new row for Fiber-reinforced product into the provider using the ContentResolver.
+        // Use the {@link ReadymixEntry#CONTENT_URI} to indicate that we want to insert
+        // into the readymix database table.
+        // Receive the new content URI that will allow us to access Fiber-reinforced's data in the future.
+        Uri newUri = getContentResolver().insert(ReadymixEntry.CONTENT_URI, values);
 
-        Log.v("ViewProductActivity", "New row ID " + newRowId);
+        Log.v("ViewProductActivity", "New row ID " + newUri);
     }
 
     @Override
