@@ -20,13 +20,19 @@ import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
  */
 public class ReadymixProvider extends ContentProvider {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = ReadymixProvider.class.getSimpleName();
 
-    /** URI matcher code for the content URI for the readymixes table */
+    /**
+     * URI matcher code for the content URI for the readymixes table
+     */
     private static final int READYMIX = 1000;
 
-    /** URI matcher code for the content URI for a single readymix in the readymix table */
+    /**
+     * URI matcher code for the content URI for a single readymix in the readymix table
+     */
     private static final int READYMIX_ID = 1001;
 
     /**
@@ -57,7 +63,9 @@ public class ReadymixProvider extends ContentProvider {
         sUriMatcher.addURI(ReadymixContract.CONTENT_AUTHORITY, ReadymixContract.PATH_READYMIX + "/#", READYMIX_ID);
     }
 
-    /** Database helper object */
+    /**
+     * Database helper object
+     */
     private ReadymixDbHelper mDbHelper;
 
     @Override
@@ -94,7 +102,7 @@ public class ReadymixProvider extends ContentProvider {
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
                 selection = ReadymixEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 // This will perform a query on the readymix table where the _id equals 7 to return a
                 // Cursor containing that row of the table.
@@ -152,7 +160,7 @@ public class ReadymixProvider extends ContentProvider {
         // Check that the supplier name is not null and valid
         String supplier = values.getAsString(ReadymixEntry.COLUMN_SUPPLIER_NAME);
         if (supplier == null && !ReadymixEntry.isCorrectSupplier(supplier)) {
-            throw new IllegalArgumentException("Pet requires valid weight");
+            throw new IllegalArgumentException("Supplier name is required");
         }
 
         // Get writable database
@@ -176,7 +184,76 @@ public class ReadymixProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection,
+                      String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case READYMIX:
+                return updateReadymix(uri, contentValues, selection, selectionArgs);
+            case READYMIX_ID:
+                // For the READYMIX_ID code, extract out the ID from the URI,
+                // so we know which row to update. Selection will be "_id=?" and selection
+                // arguments will be a String array containing the actual ID.
+                selection = ReadymixEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateReadymix(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
+        }
+    }
+
+    /**
+     * Update readymix product in the database with the given content values. Apply the changes to the rows
+     * specified in the selection and selection arguments (which could be 0 or 1 or more readymix product).
+     * Return the number of rows that were successfully updated.
+     */
+    private int updateReadymix(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        // If the {@link ReadymixEntry#COLUMN_READYMIX_NAME} key is present,
+        // check that the name value is not null.
+        if (values.containsKey(ReadymixEntry.COLUMN_READYMIX_NAME)) {
+            String name = values.getAsString(ReadymixEntry.COLUMN_READYMIX_NAME);
+            if (name == null) {
+                throw new IllegalArgumentException("Pet requires a name");
+            }
+        }
+
+        // If the {@link ReadymixEntry#COLUMN_READYMIX_PRICE} key is present,
+        // check that the price value is not null.
+        if (values.containsKey(ReadymixEntry.COLUMN_READYMIX_PRICE)) {
+            Integer price = values.getAsInteger(ReadymixEntry.COLUMN_READYMIX_PRICE);
+            if (price == null || price == 0 || price < 0) {
+                throw new IllegalArgumentException("new product requires valid price");
+            }
+        }
+
+        // If the {@link ReadymixEntry#COLUMN_READYMIX_QUANTITY} key is present,
+        // check that the quantity value is not null.
+        if (values.containsKey(ReadymixEntry.COLUMN_READYMIX_QUANTITY)) {
+            Integer quantity = values.getAsInteger(ReadymixEntry.COLUMN_READYMIX_QUANTITY);
+            if (quantity == null || quantity == 0 || quantity < 0) {
+                throw new IllegalArgumentException("new product requires valid quantity");
+            }
+        }
+
+        // If the {@link ReadymixEntry#COLUMN_SUPPLIER_NAME} key is present,
+        // check that the supplier name value is valid.
+        if (values.containsKey(ReadymixEntry.COLUMN_SUPPLIER_NAME)) {
+            String supplier = values.getAsString(ReadymixEntry.COLUMN_SUPPLIER_NAME);
+            if (supplier == null && !ReadymixEntry.isCorrectSupplier(supplier)) {
+                throw new IllegalArgumentException("Supplier name is required");
+            }
+        }
+
+        // If there are no values to update, then don't try to update the database
+        if (values.size() == 0) {
+            return 0;
+        }
+
+        // Otherwise, get writeable database to update the data
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Returns the number of database rows affected by the update statement
+        return database.update(ReadymixEntry.TABLE_NAME, values, selection, selectionArgs);
+
     }
 }
