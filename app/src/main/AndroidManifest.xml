@@ -17,6 +17,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditProductActivity"></activity>
+
+        <provider
+            android:authorities="com.fisal.readymixconcreteinventory"
+            android:name=".data.ReadymixProvider"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
