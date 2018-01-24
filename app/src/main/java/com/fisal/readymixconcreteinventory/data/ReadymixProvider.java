@@ -117,11 +117,6 @@ public class ReadymixProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
-        return null;
-    }
-
-    @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
 
         final int match = sUriMatcher.match(uri);
@@ -261,14 +256,44 @@ public class ReadymixProvider extends ContentProvider {
         switch (match) {
             case READYMIX:
                 // Delete all rows that match the selection and selection args
-                return database.delete(ReadymixEntry.TABLE_NAME, selection,selectionArgs);
+                return database.delete(ReadymixEntry.TABLE_NAME, selection, selectionArgs);
             case READYMIX_ID:
                 // Delete a single row given by the ID in the URI
                 selection = ReadymixEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return database.delete(ReadymixEntry.TABLE_NAME, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);
         }
     }
+
+    /**
+     * The use of MIME types is a natural consequence when you think about how a ContentProvider is accessed through URIs, i.e. something like an URL on the Internet.
+     * Just like on the Internet there are MIME types like text/html for web pages and image/jpeg for .jpg images,
+     * Android wants you to define a custom MIME type for any data type your ContentProvider handles.
+     * <p>
+     * This field defines a custom MIME type (recognizable by the type/subtype pattern).
+     * <p>
+     * Android suggests you use vnd.android.cursor.dir/... as the first part for any kind of "directory listing" (multiple items)
+     * and vnd.android.cursor.item/... as the first part for any kind of single item.
+     * <p>
+     * For the subtype, it's again suggested to start it with vnd. and then add something like your reverse domain name / package name,
+     * e.g. vnd.android.cursor.item/vnd.com.mydomain.myapp.mydata
+     * <p>
+     * To avoid all those vnd... strings in your code, there's also some constants in ContentResolver like CURSOR_DIR_BASE_TYPE and CURSOR_ITEM_BASE_TYPE.
+     */
+    @Override
+    public String getType(Uri uri) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case READYMIX:
+                return ReadymixEntry.CONTENT_LIST_TYPE;
+            case READYMIX_ID:
+                return ReadymixEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
+        }
+    }
+
+
 }
