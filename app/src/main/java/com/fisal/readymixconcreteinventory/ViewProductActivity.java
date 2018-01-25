@@ -3,8 +3,6 @@ package com.fisal.readymixconcreteinventory;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,9 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
 
@@ -38,6 +34,13 @@ public class ViewProductActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // Find the ListView which will be populated with the readymix product data
+        ListView readymixListView = (ListView) findViewById(R.id.list);
+
+        // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
+        View emptyView = findViewById(R.id.empty_view);
+        readymixListView.setEmptyView(emptyView);
     }
 
     @Override
