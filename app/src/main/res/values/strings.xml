@@ -20,6 +20,8 @@
     <string name="editProduct_insert_new_failed">Error with saving new readymix product</string>
     <string name="editProduct_insert_new_successful">New readymix product saved</string>
     <string name="label_currency">$</string>
-    <string name="empty_view_title_text">The inventory is epmty...</string>
+    <string name="empty_view_title_text">The inventory is epmty…</string>
     <string name="empty_view_subtitle_text">Get started by adding a new readymix product</string>
+    <string name="editor_activity_title_edit_readymix_product">Edit Readymix product</string>
+    <string name="editor_activity_title_new_readymix_product">Add new readymix product</string>
 </resources>

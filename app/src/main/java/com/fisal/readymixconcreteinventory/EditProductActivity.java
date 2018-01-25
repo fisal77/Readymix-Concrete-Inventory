@@ -75,6 +75,21 @@ public class EditProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_product);
 
+        // Examine the intent that was used to launch this activity,
+        // in order to figure out if we're creating a new readymix product or editing an existing one.
+        Intent intent = getIntent();
+        Uri currentReadymixUri = intent.getData();
+
+        // If the intent DOES NOT contain a readymix product content URI, then we know that we are
+        // creating a new readymix product.
+        if (currentReadymixUri == null) {
+            // This is a new readymix product, so change the app bar to say "Add a new readymix product"
+            setTitle(getString(R.string.editor_activity_title_new_readymix_product));
+        } else {
+            // Otherwise this is an existing readymix product, so change app bar to say "Edit Readymix product"
+            setTitle(getString(R.string.editor_activity_title_edit_readymix_product));
+        }
+
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_readymix_name);
         mPriceEditText = (EditText) findViewById(R.id.edit_readymix_price);

@@ -325,5 +325,5 @@ public class ReadymixProvider extends ContentProvider {
                 throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }
     }
-    
+
 }

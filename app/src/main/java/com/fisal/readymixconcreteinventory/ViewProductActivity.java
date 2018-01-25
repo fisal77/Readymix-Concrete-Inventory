@@ -1,6 +1,7 @@
 package com.fisal.readymixconcreteinventory;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
@@ -52,9 +54,32 @@ public class ViewProductActivity extends AppCompatActivity implements
         View emptyView = findViewById(R.id.empty_view);
         readymixListView.setEmptyView(emptyView);
 
+        // Setup an Adapter to create a list item for each row of readymix product data in the Cursor.
         // There is no readymix product data yet (until the loader finishes) so pass in null for the Cursor.
         mCursorAdapter = new ReadymixCursorAdapter(this, null);
         readymixListView.setAdapter(mCursorAdapter);
+
+        // Setup the item click listener
+        readymixListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Create new intent to go to {@link EditProductActivity}
+                Intent intent = new Intent(ViewProductActivity.this, EditProductActivity.class);
+
+                // Form the content URI that represents the specific readymix product that was clicked on,
+                // by appending the "id" (passed as input to this method) onto the
+                // {@link ReadymixEntry#CONTENT_URI}.
+                // For example, the URI would be "content://com.fisal.readymixconcreteinventory/readymix/7"
+                // if the readymix product with ID 7 was clicked on.
+                Uri currentReadymixUri = ContentUris.withAppendedId(ReadymixEntry.CONTENT_URI, id);
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentReadymixUri);
+
+                // Launch the {@link EditProductActivity} to display the data for the current readymix product.
+                startActivity(intent);
+            }
+        });
 
         // Kick off the loader
         getLoaderManager().initLoader(READYMIX_LOADER, null, this);

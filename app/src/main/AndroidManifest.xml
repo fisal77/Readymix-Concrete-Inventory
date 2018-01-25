@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.fisal.readymixconcreteinventory">
 
     <application
@@ -16,7 +17,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditProductActivity"></activity>
+        <activity android:name=".EditProductActivity"
+           android:parentActivityName=".ViewProductActivity"
+            tools:targetApi="jelly_bean">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ViewProductActivity" />
+        </activity>
 
         <provider
             android:authorities="com.fisal.readymixconcreteinventory"
