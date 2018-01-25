@@ -5,22 +5,10 @@
     android:layout_height="match_parent"
     tools:context="com.fisal.readymixconcreteinventory.ViewProductActivity">
 
-
-    <ImageView
-        android:id="@+id/view_readymix_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="@dimen/image_margin"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_action_add_image" />
-
-    <TextView
-        android:id="@+id/text_view_readymix"
+    <ListView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/view_readymix_image"
-        android:padding="@dimen/activity_margin"
-        tools:text="TEST" />
+        android:layout_height="match_parent" />
 
 
     <android.support.design.widget.FloatingActionButton

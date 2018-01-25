@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Layout for a single list item -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp"
+    android:background="@color/colorPrimary"
+    android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:padding="30dp">
+
+    <ImageView
+        android:id="@+id/image_view_readymix"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        tools:src="@drawable/ic_action_add_image" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingLeft="16dp">
+
+        <!--  android:textColor="#FFFFFFFF" -->
+        <TextView
+            android:id="@+id/text_view_readymix_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="#2B3D4D"
+            tools:text="Product Name" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+        <TextView
+            android:id="@+id/text_view_readymix_price_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/label_padding"
+            android:paddingRight="@dimen/label_padding"
+            android:fontFamily="sans-serif"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="#dce2e7"
+            android:text="@string/hint_price" />
+        <!-- android:textColor="#FFFFFFFF" -->
+        <TextView
+        android:id="@+id/text_view_readymix_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="#dce2e7"
+        tools:text="10" />
+            <TextView
+                android:id="@+id/text_view_readymix_currency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/label_padding"
+                android:paddingStart="@dimen/label_padding"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="#dce2e7"
+                android:text="@string/label_currency" />
+    </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/text_view_readymix_quantity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/label_padding"
+                android:paddingRight="@dimen/label_padding"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="#dce2e7"
+                android:text="@string/hint_quantity" />
+        <TextView
+            android:id="@+id/text_view_readymix_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="#dce2e7"
+            tools:text="400" />
+            <TextView
+                android:id="@+id/text_view_readymix_measure_unit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/label_padding"
+                android:paddingStart="@dimen/label_padding"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="#dce2e7"
+                android:text="@string/unit_cubic_meter" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

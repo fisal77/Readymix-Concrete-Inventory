@@ -19,4 +19,5 @@
     <string name="action_delete">Delete</string>
     <string name="editProduct_insert_new_failed">Error with saving new readymix product</string>
     <string name="editProduct_insert_new_successful">New readymix product saved</string>
+    <string name="label_currency">$</string>
 </resources>

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
@@ -74,60 +75,28 @@ public class ViewProductActivity extends AppCompatActivity {
                 null,     // The values for the WHERE clause - Selection criteria
                 orderBy);             // The sort order for the returned rows
 
-        TextView displayView = (TextView) findViewById(R.id.text_view_readymix);
-        ImageView imageView = (ImageView) findViewById(R.id.view_readymix_image);
 
-        try {
-            // Create a header in the Text View that looks like this:
-            //
-            // The readymix table contains <number of rows in Cursor> readymix.
-            //
-            //
-            // In the while loop below, iterate through the rows of the cursor and display
-            // the information from each column in this order.
-            displayView.setText("The readymix concrete table contains " + cursor.getCount() + " products.\n\n");
-            displayView.append(ReadymixEntry._ID + " - " +
-                    ReadymixEntry.COLUMN_READYMIX_NAME + " - " +
-                    ReadymixEntry.COLUMN_READYMIX_PRICE + " - " +
-                    ReadymixEntry.COLUMN_READYMIX_QUANTITY + " - " +
-                    ReadymixEntry.COLUMN_PRODUCT_IMAGE + " - " +
-                    ReadymixEntry.COLUMN_SUPPLIER_NAME + " - " +
-                    ReadymixEntry.COLUMN_SUPPLIER_EMAIL + " - " +
-                    ReadymixEntry.COLUMN_SUPPLIER_PHONE + "\n");
+//        ImageView imageView = (ImageView) findViewById(R.id.view_readymix_image);
+        // Find the ListView which will be populated with the readymix product data
+        ListView readymixProductListView = (ListView) findViewById(R.id.list);
 
-            // Figure out the index of each column
-            int idColumnIndex = cursor.getColumnIndex(ReadymixEntry._ID);
-            int pNameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_QUANTITY);
+        // Setup an Adapter to create a list item for each row of readymix product data in the Cursor.
+        ReadymixCursorAdapter adapter = new ReadymixCursorAdapter(this, cursor);
+
+        // Attach the adapter to the ListView.
+        readymixProductListView.setAdapter(adapter);
+
+/*            // Figure out the index of each column
             int imageColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_PRODUCT_IMAGE);
-            int sNameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_NAME);
-            int sEmailColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_EMAIL);
-            int sPhoneColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_PHONE);
-
-
 
             // Iterate through all the returned rows in the cursor
             while (cursor.moveToNext()) {
                 // Use that index to extract the String or Int value of the word
                 // at the current row the cursor is on.
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentName = cursor.getString(pNameColumnIndex);
-                int currentPrice = cursor.getInt(priceColumnIndex);
-                int currentQuantity = cursor.getInt(quantityColumnIndex);
                 byte[] currentImage = cursor.getBlob(imageColumnIndex);
-                String currentSupplierName = cursor.getString(sNameColumnIndex);
-                String currentSupplierEmail = cursor.getString(sEmailColumnIndex);
-                String currentSupplierPhone = cursor.getString(sPhoneColumnIndex);
 
                 // Display the values from each column of the current row in the cursor in the TextView
-                displayView.append(("\n" + currentID + " - " +
-                        currentName + " - " +
-                        currentPrice + " - " +
-                        currentQuantity + " - " +
-                        currentSupplierName + " - " +
-                        currentSupplierEmail + " - " +
-                        currentSupplierPhone));
+
                 if (!(currentImage == null)) {
                     imageView.setImageBitmap(convertToBitmap(currentImage));
                 } else {
@@ -139,13 +108,13 @@ public class ViewProductActivity extends AppCompatActivity {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.
             cursor.close();
-        }
+        }*/
     }
 
-    //get bitmap image from byte array
+/*    //get bitmap image from byte array
     private Bitmap convertToBitmap(byte[] currentImage) {
         return BitmapFactory.decodeByteArray(currentImage, 0, currentImage.length);
-    }
+    }*/
 
     /**
      * Helper method to insert hardcoded readymix data into the database. For debugging purposes only.
