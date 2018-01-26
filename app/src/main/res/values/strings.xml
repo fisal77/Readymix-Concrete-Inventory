@@ -26,4 +26,7 @@
     <string name="editor_activity_title_new_readymix_product">Add new readymix product</string>
     <string name="editProduct_update_successful">Readymix product updated</string>
     <string name="editProduct_update_failed">Error with updating readymix product</string>
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
 </resources>
