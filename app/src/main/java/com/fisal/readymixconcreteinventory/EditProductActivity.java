@@ -290,9 +290,8 @@ public class EditProductActivity extends AppCompatActivity
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
-        int price = Integer.parseInt(priceString);
         String quantityString = mQuantityEditText.getText().toString().trim();
-        int quantity = Integer.parseInt(quantityString);
+
         if (!(mBitmap == null)) {
             mPhoto = imageToDB(mBitmap);
         } else {
@@ -302,12 +301,37 @@ public class EditProductActivity extends AppCompatActivity
         String supplierEmailString = mSupplierEmailEditText.getText().toString();
         String supplierPhoneString = mSupplierPhoneEditText.getText().toString();
 
+        // Check if this is supposed to be a new readymix product
+        // and check if all the fields in the EditProductActivity are blank
+        if (mCurrentReadymixUri == null &&
+                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
+                TextUtils.isEmpty(quantityString) && mPhoto == null &&
+                mSupplierName.equals(ReadymixEntry.OTHER_SUPPLIER) &&
+                TextUtils.isEmpty(supplierEmailString) && TextUtils.isEmpty(supplierPhoneString) ) {
+            // Since no fields were modified, we can return early without creating a new readymix product.
+            // No need to create ContentValues and no need to do any ContentProvider operations.
+            return;
+        }
+
         // Create a ContentValues object where column names are the keys,
         // and readymix attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(ReadymixEntry.COLUMN_READYMIX_NAME, nameString);
+        // If the price is not provided by the user, don't try to parse the string into an
+        // integer value. Use 1 by default.
+        int price = 1;
+        if (!TextUtils.isEmpty(priceString)) {
+            price = Integer.parseInt(priceString);
+        }
         values.put(ReadymixEntry.COLUMN_READYMIX_PRICE, price);
+        // If the quantity is not provided by the user, don't try to parse the string into an
+        // integer value. Use 1 by default.
+        int quantity = 1;
+        if (!TextUtils.isEmpty(quantityString)) {
+            quantity = Integer.parseInt(quantityString);
+        }
         values.put(ReadymixEntry.COLUMN_READYMIX_QUANTITY, quantity);
+
         values.put(ReadymixEntry.COLUMN_PRODUCT_IMAGE, mPhoto);
         values.put(ReadymixEntry.COLUMN_READYMIX_NAME, mSupplierName);
         values.put(ReadymixEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
