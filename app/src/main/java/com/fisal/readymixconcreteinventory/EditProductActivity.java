@@ -36,38 +36,60 @@ import java.io.ByteArrayOutputStream;
 public class EditProductActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the readymix product data loader */
+    /**
+     * Identifier for the readymix product data loader
+     */
     private static final int EXISTING_READYMIX_LOADER = 0;
 
-    /** Content URI for the existing readymix product (null if it's a new readymix product) */
+    /**
+     * Content URI for the existing readymix product (null if it's a new readymix product)
+     */
     private Uri mCurrentReadymixUri;
 
-    /** EditText field to enter the readymix's name */
+    /**
+     * EditText field to enter the readymix's name
+     */
     private EditText mNameEditText;
 
-    /** EditText field to enter the readymix's price */
+    /**
+     * EditText field to enter the readymix's price
+     */
     private EditText mPriceEditText;
 
-    /** EditText field to enter the readymix's quantity */
+    /**
+     * EditText field to enter the readymix's quantity
+     */
     private EditText mQuantityEditText;
 
-    /** ImageView field to enter the readymix's product image */
+    /**
+     * ImageView field to enter the readymix's product image
+     */
     private ImageView mProductImageView;
-    /** Converting image to SQLite DB and store it */
+    /**
+     * Converting image to SQLite DB and store it
+     */
     private Bitmap mBitmap;
     private byte[] mPhoto;
 
-    /** Spinner (dropdown menu) field to enter the readymix's supplier name */
+    /**
+     * Spinner (dropdown menu) field to enter the readymix's supplier name
+     */
     private Spinner mSupplierNameSpinner;
 
-    /** EditText field to enter the readymix's supplier email */
+    /**
+     * EditText field to enter the readymix's supplier email
+     */
     private EditText mSupplierEmailEditText;
 
-    /** EditText field to enter the readymix's supplier phone */
+    /**
+     * EditText field to enter the readymix's supplier phone
+     */
     private EditText mSupplierPhoneEditText;
 
-    /** Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-        When user select the main array the others will be changed as same order. */
+    /**
+     * Array strings for supplier's email and phone. All both linked to the main supplier's name array.
+     * When user select the main array the others will be changed as same order.
+     */
     private String[] mSupplierEmailArray;
     private String[] mSupplierPhoneArray;
 
@@ -162,23 +184,19 @@ public class EditProductActivity extends AppCompatActivity
                         mSupplierName = ReadymixEntry.OTHER_SUPPLIER;
                         mSupplierEmailEditText.setText(supplierEmailEditTextAdapter.getItem(position).toString());
                         mSupplierPhoneEditText.setText(supplierPhoneEditTextAdapter.getItem(position).toString());
-                    }
-                    else if (selection.equals(getString(R.string.srmcc_supplier))) {
+                    } else if (selection.equals(getString(R.string.srmcc_supplier))) {
                         mSupplierName = ReadymixEntry.SRMCC_SUPPLIER;
                         mSupplierEmailEditText.setText(supplierEmailEditTextAdapter.getItem(position).toString());
                         mSupplierPhoneEditText.setText(supplierPhoneEditTextAdapter.getItem(position).toString());
-                    }
-                    else if (selection.equals(getString(R.string.cemex_supplier))) {
+                    } else if (selection.equals(getString(R.string.cemex_supplier))) {
                         mSupplierName = ReadymixEntry.CEMEX_SUPPLIER;
                         mSupplierEmailEditText.setText(supplierEmailEditTextAdapter.getItem(position).toString());
                         mSupplierPhoneEditText.setText(supplierPhoneEditTextAdapter.getItem(position).toString());
-                    }
-                    else if (selection.equals(getString(R.string.ubinto_supplier))) {
+                    } else if (selection.equals(getString(R.string.ubinto_supplier))) {
                         mSupplierName = ReadymixEntry.UBINTO_SUPPLIER;
                         mSupplierEmailEditText.setText(supplierEmailEditTextAdapter.getItem(position).toString());
                         mSupplierPhoneEditText.setText(supplierPhoneEditTextAdapter.getItem(position).toString());
-                    }
-                    else {
+                    } else {
                         mSupplierName = ReadymixEntry.BINLADEN_SUPPLIER;
                         mSupplierEmailEditText.setText(supplierEmailEditTextAdapter.getItem(position).toString());
                         mSupplierPhoneEditText.setText(supplierPhoneEditTextAdapter.getItem(position).toString());
@@ -194,19 +212,20 @@ public class EditProductActivity extends AppCompatActivity
         });
     }
 
-    public void selectImage(){
+    public void selectImage() {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, 2);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
+        switch (requestCode) {
             case 2:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Uri choosenImage = data.getData();
 
-                    if(choosenImage !=null){
+                    if (choosenImage != null) {
 
                         mBitmap = decodeUri(choosenImage, 400);
                         mProductImageView.setImageBitmap(mBitmap);
@@ -246,8 +265,7 @@ public class EditProductActivity extends AppCompatActivity
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize = scale;
             return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -255,7 +273,7 @@ public class EditProductActivity extends AppCompatActivity
 
     //Convert bitmap to bytes
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    private byte[] imageToDB(Bitmap b){
+    private byte[] imageToDB(Bitmap b) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         b.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -265,9 +283,9 @@ public class EditProductActivity extends AppCompatActivity
 
 
     /**
-     * Get user input from editor and save new readymix concrete product into database.
+     * Get user input from editor and save readymix concrete product into database.
      */
-    private void insertReadymix() {
+    private void saveReadymix() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -295,18 +313,39 @@ public class EditProductActivity extends AppCompatActivity
         values.put(ReadymixEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
         values.put(ReadymixEntry.COLUMN_SUPPLIER_PHONE, supplierPhoneString);
 
-        // Insert a new readymix into the provider, returning the content URI for the new readymix product.
-        Uri newUri = getContentResolver().insert(ReadymixEntry.CONTENT_URI, values);
+        // Determine if this is a new or existing pet by checking if mCurrentPetUri is null or not
+        if (mCurrentReadymixUri == null) {
+            // This is a NEW pet, so insert a new readymix into the provider,
+            // returning the content URI for the new readymix product.
+            Uri newUri = getContentResolver().insert(ReadymixEntry.CONTENT_URI, values);
 
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newUri == null) {
-            // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(this, getString(R.string.editProduct_insert_new_failed),
-                    Toast.LENGTH_SHORT).show();
+            // Show a toast message depending on whether or not the insertion was successful.
+            if (newUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, getString(R.string.editProduct_insert_new_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editProduct_insert_new_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
         } else {
-            // Otherwise, the insertion was successful and we can display a toast.
-            Toast.makeText(this, getString(R.string.editProduct_insert_new_successful),
-                    Toast.LENGTH_SHORT).show();
+            // Otherwise this is an EXISTING readymix product, so update the readymix with content URI: mCurrentReadymixUri
+            // and pass in the new ContentValues. Pass in null for the selection and selection args
+            // because mCurrentReadymixUri will already identify the correct row in the database that
+            // we want to modify.
+            int rowsAffected = getContentResolver().update(mCurrentReadymixUri, values, null, null);
+
+            // Show a toast message depending on whether or not the update was successful.
+            if (rowsAffected == 0) {
+                // If no rows were affected, then there was an error with the update.
+                Toast.makeText(this, getString(R.string.editProduct_update_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the update was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editProduct_update_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -325,7 +364,7 @@ public class EditProductActivity extends AppCompatActivity
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save new readymix product to database
-                insertReadymix();
+                saveReadymix();
                 // Exit activity
                 finish();
                 return true;
@@ -355,7 +394,7 @@ public class EditProductActivity extends AppCompatActivity
                 ReadymixEntry.COLUMN_SUPPLIER_NAME,
                 ReadymixEntry.COLUMN_SUPPLIER_EMAIL,
                 ReadymixEntry.COLUMN_SUPPLIER_PHONE,
-                ReadymixEntry.COLUMN_PRODUCT_IMAGE };
+                ReadymixEntry.COLUMN_PRODUCT_IMAGE};
 
         //How to order the rows, formatted as an SQL ORDER BY clause.
         String orderBy = ReadymixEntry.COLUMN_READYMIX_PRICE + " DESC";

@@ -24,4 +24,6 @@
     <string name="empty_view_subtitle_text">Get started by adding a new readymix product</string>
     <string name="editor_activity_title_edit_readymix_product">Edit Readymix product</string>
     <string name="editor_activity_title_new_readymix_product">Add new readymix product</string>
+    <string name="editProduct_update_successful">Readymix product updated</string>
+    <string name="editProduct_update_failed">Error with updating readymix product</string>
 </resources>
