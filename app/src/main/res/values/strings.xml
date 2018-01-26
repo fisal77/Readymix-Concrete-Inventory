@@ -29,4 +29,9 @@
     <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
     <string name="discard">Discard</string>
     <string name="keep_editing">Keep Editing</string>
+    <string name="editProduct_delete_readymix_failed">Error with deleting readymix product</string>
+    <string name="editProduct_delete_readymix_successful">Readymix product deleted</string>
+    <string name="delete_dialog_msg">Delete this readymix product?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>
