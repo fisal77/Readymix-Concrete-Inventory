@@ -105,6 +105,14 @@ public class ViewProductActivity extends AppCompatActivity implements
         Log.v("ViewProductActivity", "New row ID " + newUri);
     }
 
+    /**
+     * Helper method to delete all readymix products in the database.
+     */
+    private void deleteAllReadymixProducts() {
+        int rowsDeleted = getContentResolver().delete(ReadymixEntry.CONTENT_URI, null, null);
+        Log.v("ViewProductActivity", rowsDeleted + " rows deleted from readymix database");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_view_product.xml file.
@@ -123,7 +131,7 @@ public class ViewProductActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                deleteAllReadymixProducts();
                 return true;
         }
         return super.onOptionsItemSelected(item);
