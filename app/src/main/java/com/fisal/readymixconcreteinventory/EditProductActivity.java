@@ -136,6 +136,10 @@ public class EditProductActivity extends AppCompatActivity
         if (mCurrentReadymixUri == null) {
             // This is a new readymix product, so change the app bar to say "Add a new readymix product"
             setTitle(getString(R.string.editor_activity_title_new_readymix_product));
+
+            // Invalidate the options menu, so the "Delete" menu option can be hidden.
+            // (It doesn't make sense to delete a readymix product that hasn't been created yet.)
+            invalidateOptionsMenu();
         } else {
             // Otherwise this is an existing readymix product, so change app bar to say "Edit Readymix product"
             setTitle(getString(R.string.editor_activity_title_edit_readymix_product));
@@ -407,6 +411,21 @@ public class EditProductActivity extends AppCompatActivity
         // Inflate the menu options from the res/menu/menu_edit_product.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_edit_product, menu);
+        return true;
+    }
+
+    /**
+     * This method is called after invalidateOptionsMenu(), so that the
+     * menu can be updated (some menu items can be hidden or made visible).
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        // If this is a new readymix product, hide the "Delete" menu item.
+        if (mCurrentReadymixUri == null) {
+            MenuItem menuItem = menu.findItem(R.id.action_delete);
+            menuItem.setVisible(false);
+        }
         return true;
     }
 
