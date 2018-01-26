@@ -1,9 +1,13 @@
 package com.fisal.readymixconcreteinventory;
 
 import android.annotation.TargetApi;
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -29,7 +33,14 @@ import java.io.ByteArrayOutputStream;
 /**
  * Allows user to create a new readymix concrete product or edit an existing one.
  */
-public class EditProductActivity extends AppCompatActivity {
+public class EditProductActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    /** Identifier for the readymix product data loader */
+    private static final int EXISTING_READYMIX_LOADER = 0;
+
+    /** Content URI for the existing readymix product (null if it's a new readymix product) */
+    private Uri mCurrentReadymixUri;
 
     /** EditText field to enter the readymix's name */
     private EditText mNameEditText;
@@ -78,16 +89,20 @@ public class EditProductActivity extends AppCompatActivity {
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new readymix product or editing an existing one.
         Intent intent = getIntent();
-        Uri currentReadymixUri = intent.getData();
+        mCurrentReadymixUri = intent.getData();
 
         // If the intent DOES NOT contain a readymix product content URI, then we know that we are
         // creating a new readymix product.
-        if (currentReadymixUri == null) {
+        if (mCurrentReadymixUri == null) {
             // This is a new readymix product, so change the app bar to say "Add a new readymix product"
             setTitle(getString(R.string.editor_activity_title_new_readymix_product));
         } else {
             // Otherwise this is an existing readymix product, so change app bar to say "Edit Readymix product"
             setTitle(getString(R.string.editor_activity_title_edit_readymix_product));
+
+            // Initialize a loader to read the readymix product data from the database
+            // and display the current values in the editor
+            getLoaderManager().initLoader(EXISTING_READYMIX_LOADER, null, this);
         }
 
         // Find all relevant views that we will need to read user input from
@@ -328,4 +343,109 @@ public class EditProductActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        // Since the EditProductActivity shows all readymix product attributes, define a projection that contains
+        // all columns from the readymix product table
+        String[] projection = {
+                ReadymixEntry._ID,
+                ReadymixEntry.COLUMN_READYMIX_NAME,
+                ReadymixEntry.COLUMN_READYMIX_PRICE,
+                ReadymixEntry.COLUMN_READYMIX_QUANTITY,
+                ReadymixEntry.COLUMN_SUPPLIER_NAME,
+                ReadymixEntry.COLUMN_SUPPLIER_EMAIL,
+                ReadymixEntry.COLUMN_SUPPLIER_PHONE,
+                ReadymixEntry.COLUMN_PRODUCT_IMAGE };
+
+        //How to order the rows, formatted as an SQL ORDER BY clause.
+        String orderBy = ReadymixEntry.COLUMN_READYMIX_PRICE + " DESC";
+
+        // This loader will execute the ContentProvider's query method on a background thread
+        return new CursorLoader(this, // Parent activity context
+                ReadymixEntry.CONTENT_URI,   // Provider content URI to query
+                projection,                  // Columns to include in the resulting Cursor
+                null,               // The columns for the WHERE clause - Selection criteria
+                null,           // The values for the WHERE clause - Selection criteria
+                orderBy);                   // The sort order for the returned rows
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Bail early if the cursor is null or there is less than 1 row in the cursor
+        if (cursor == null || cursor.getCount() < 1) {
+            return;
+        }
+
+        // Proceed with moving to the first row of the cursor and reading data from it
+        // (This should be the only row in the cursor)
+        if (cursor.moveToFirst()) {
+            // Find the columns of readymix product attributes that we're interested in
+            int nameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_NAME);
+            int priceColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_PRICE);
+            int quantityColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_QUANTITY);
+            int imageColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_PRODUCT_IMAGE);
+            int supplierNameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_NAME);
+            int supplierEmailColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_EMAIL);
+            int supplierPhoneColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_PHONE);
+
+            // Extract out the value from the Cursor for the given column index
+            String readymixName = cursor.getString(nameColumnIndex);
+            int readymixPrice = cursor.getInt(priceColumnIndex);
+            int readymixQuantity = cursor.getInt(quantityColumnIndex);
+            byte[] currentImage = cursor.getBlob(imageColumnIndex);
+            String readymixSupplierName = cursor.getString(supplierNameColumnIndex);
+            String readymixSupplierEmail = cursor.getString(supplierEmailColumnIndex);
+            String readymixSupplierPhone = cursor.getString(supplierPhoneColumnIndex);
+
+            // Update the views on the screen with the values from the database
+            mNameEditText.setText(readymixName);
+            mPriceEditText.setText(readymixPrice);
+            mQuantityEditText.setText(readymixQuantity);
+            mSupplierEmailEditText.setText(readymixSupplierEmail);
+            mSupplierPhoneEditText.setText(readymixSupplierPhone);
+            if (!(currentImage == null)) {
+                mProductImageView.setImageBitmap(convertToBitmap(currentImage));
+            } else {
+                mProductImageView.setImageResource(R.drawable.ic_action_add_image);
+            }
+
+            // readymixSupplierName is a dropdown spinner, so map the constant value from the database
+            // into one of the dropdown options (0 is Other Supplier, 1 is SRMCC, 2 is CEMEX and so on...).
+            // Then call setSelection() so that option is displayed on screen as the current selection.
+            switch (readymixSupplierName) {
+                case ReadymixEntry.SRMCC_SUPPLIER:
+                    mSupplierNameSpinner.setSelection(1);
+                    break;
+                case ReadymixEntry.CEMEX_SUPPLIER:
+                    mSupplierNameSpinner.setSelection(2);
+                    break;
+                case ReadymixEntry.UBINTO_SUPPLIER:
+                    mSupplierNameSpinner.setSelection(3);
+                    break;
+                case ReadymixEntry.BINLADEN_SUPPLIER:
+                    mSupplierNameSpinner.setSelection(4);
+                    break;
+                default:
+                    mSupplierNameSpinner.setSelection(0);
+
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // If the loader is invalidated, clear out all the data from the input fields.
+        mNameEditText.setText("");
+        mPriceEditText.setText("");
+        mQuantityEditText.setText("");
+        mSupplierNameSpinner.setSelection(0);
+        mSupplierEmailEditText.setText("");
+        mSupplierPhoneEditText.setText("");
+        mProductImageView.setImageResource(R.drawable.ic_action_add_image);
+    }
+
+    //get bitmap image from currentImage byte array
+    private Bitmap convertToBitmap(byte[] currentImage) {
+        return BitmapFactory.decodeByteArray(currentImage, 0, currentImage.length);
+    }
 }
