@@ -160,6 +160,8 @@ public class ReadymixProvider extends ContentProvider {
 
         // Check that the supplier name is not null and valid
         String supplier = values.getAsString(ReadymixEntry.COLUMN_SUPPLIER_NAME);
+        // Log the supplier column value and Uri for insert row
+        Log.v(LOG_TAG, "Supplier column and Uri " + uri + " " + supplier);
         if (supplier == null && !ReadymixEntry.isCorrectSupplier(supplier)) {
             throw new IllegalArgumentException("Supplier name is required");
         }
@@ -180,6 +182,8 @@ public class ReadymixProvider extends ContentProvider {
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
+
+
     }
 
     @Override

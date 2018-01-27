@@ -1,5 +1,6 @@
 package com.fisal.readymixconcreteinventory;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -8,6 +9,7 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,6 +17,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -24,7 +28,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -43,6 +49,11 @@ public class EditProductActivity extends AppCompatActivity
      * Identifier for the readymix product data loader
      */
     private static final int EXISTING_READYMIX_LOADER = 0;
+
+    /**
+     * Identifier for make phone call using supplier phone no. from database
+     */
+    private static final int MY_PERMISSION_FOR_PHONE_CALL = 1;
 
     /**
      * Content URI for the existing readymix product (null if it's a new readymix product)
@@ -88,6 +99,18 @@ public class EditProductActivity extends AppCompatActivity
      * EditText field to enter the readymix's supplier phone
      */
     private EditText mSupplierPhoneEditText;
+
+    /**
+     * Buttons to increase and decrease quantity
+     */
+    private Button decreaseQuantityBtn;
+    private Button increaseQuantityBtn;
+
+    /**
+     * Image buttons for email and call the supplier data
+     */
+    private ImageButton sendEmailToSupplier;
+    private ImageButton phoneCallToSupplier;
 
     /**
      * Array strings for supplier's email and phone. All both linked to the main supplier's name array.
@@ -157,6 +180,10 @@ public class EditProductActivity extends AppCompatActivity
         mSupplierNameSpinner = (Spinner) findViewById(R.id.spinner_supplier_name);
         mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mSupplierPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
+        increaseQuantityBtn = (Button) findViewById(R.id.increaseQuantity);
+        decreaseQuantityBtn = (Button) findViewById(R.id.decreaseQuantity);
+        sendEmailToSupplier = (ImageButton) findViewById(R.id.emailImageButton);
+        phoneCallToSupplier = (ImageButton) findViewById(R.id.phoneImageButton);
 
         // Array strings for supplier's email and phone. All both linked to the main supplier's name array.
         // When user select the main array the others will be changed as same order.
@@ -183,7 +210,88 @@ public class EditProductActivity extends AppCompatActivity
                 selectImage();
             }
         });
+
+        increaseQuantityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mQuantityEditText.getText().toString().isEmpty()) {
+                    mQuantityEditText.setText("0");
+                }
+                int quantityFromEditText = Integer.parseInt(mQuantityEditText.getText().toString());
+                if (quantityFromEditText == 650) {
+                    return;
+                }
+                if (quantityFromEditText >= 0) {
+                    quantityFromEditText = quantityFromEditText + 1;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+                if (quantityFromEditText < 0) {
+                    quantityFromEditText = 1;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+            }
+        });
+
+        decreaseQuantityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mQuantityEditText.getText().toString().isEmpty()) {
+                    mQuantityEditText.setText("0");
+                }
+                int quantityFromEditText = Integer.parseInt(mQuantityEditText.getText().toString());
+                if (quantityFromEditText == 0) {
+                    return;
+                }
+                if (quantityFromEditText > 0) {
+                    quantityFromEditText = quantityFromEditText - 1;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+                if (quantityFromEditText < 1) {
+                    quantityFromEditText = 0;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+            }
+        });
+
+        sendEmailToSupplier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String supplierName = mSupplierNameSpinner.getSelectedItem().toString();
+                String productName = mNameEditText.getText().toString();
+                String supplierEmail = mSupplierEmailEditText.getText().toString();
+                Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
+                sendEmail.setData(Uri.parse("mailto:"));
+                sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{supplierEmail});
+                sendEmail.putExtra(Intent.EXTRA_SUBJECT, supplierName + " - " + productName);
+                if (sendEmail.resolveActivity(getPackageManager()) != null) {
+                    startActivity(sendEmail);
+                }
+            }
+        });
+
+        phoneCallToSupplier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ActivityCompat.checkSelfPermission(EditProductActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+
+                    // Check the user to give phone call permission.
+                    getPermissionToMakePhoneCall();
+
+                } else {
+                    callSupplierPhone();
+                }
+            }
+        });
+
     }
+
 
     /**
      * Setup the dropdown spinner that allows the user to select the supplier details of the readymix.
@@ -324,6 +432,9 @@ public class EditProductActivity extends AppCompatActivity
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
+        if (mQuantityEditText.getText().equals("")) {
+            mQuantityEditText.setText("0");
+        }
 
         if (!(mBitmap == null)) {
             mPhoto = imageToDB(mBitmap);
@@ -331,6 +442,7 @@ public class EditProductActivity extends AppCompatActivity
             mPhoto = null;
         }
 
+        String supplierNameString = mSupplierNameSpinner.getSelectedItem().toString();
         String supplierEmailString = mSupplierEmailEditText.getText().toString();
         String supplierPhoneString = mSupplierPhoneEditText.getText().toString();
 
@@ -339,8 +451,8 @@ public class EditProductActivity extends AppCompatActivity
         if (mCurrentReadymixUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
                 TextUtils.isEmpty(quantityString) && mPhoto == null &&
-                mSupplierName.equals(ReadymixEntry.OTHER_SUPPLIER) &&
-                TextUtils.isEmpty(supplierEmailString) && TextUtils.isEmpty(supplierPhoneString) ) {
+                supplierNameString.equals(ReadymixEntry.OTHER_SUPPLIER) &&
+                TextUtils.isEmpty(supplierEmailString) && TextUtils.isEmpty(supplierPhoneString)) {
             // Since no fields were modified, we can return early without creating a new readymix product.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
@@ -366,7 +478,7 @@ public class EditProductActivity extends AppCompatActivity
         values.put(ReadymixEntry.COLUMN_READYMIX_QUANTITY, quantity);
 
         values.put(ReadymixEntry.COLUMN_PRODUCT_IMAGE, mPhoto);
-        values.put(ReadymixEntry.COLUMN_READYMIX_NAME, mSupplierName);
+        values.put(ReadymixEntry.COLUMN_SUPPLIER_NAME, supplierNameString);
         values.put(ReadymixEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
         values.put(ReadymixEntry.COLUMN_SUPPLIER_PHONE, supplierPhoneString);
 
@@ -557,8 +669,9 @@ public class EditProductActivity extends AppCompatActivity
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(readymixName);
-            mPriceEditText.setText(readymixPrice);
-            mQuantityEditText.setText(readymixQuantity);
+            mPriceEditText.setText(Integer.toString(readymixPrice));
+            mQuantityEditText.setText(Integer.toString(readymixQuantity));
+            // mSupplierNameSpinner.getSelectedItem();
             mSupplierEmailEditText.setText(readymixSupplierEmail);
             mSupplierPhoneEditText.setText(readymixSupplierPhone);
             if (!(currentImage == null)) {
@@ -608,7 +721,6 @@ public class EditProductActivity extends AppCompatActivity
     }
 
 
-
     /**
      * Show a dialog that warns the user there are unsaved changes that will be lost
      * if they continue leaving the Edit Product Activity.
@@ -637,7 +749,6 @@ public class EditProductActivity extends AppCompatActivity
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
 
 
     /**
@@ -694,6 +805,57 @@ public class EditProductActivity extends AppCompatActivity
 
         // Close the activity
         finish();
+    }
+
+
+    @TargetApi(23)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSION_FOR_PHONE_CALL) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "PHONE CALL permission granted", Toast.LENGTH_SHORT).show();
+                // If permission granted by user then start phone call activity
+                callSupplierPhone();
+            } else {
+                // showRationale = false if user clicks Never Ask Again, otherwise true
+                boolean showRationale = shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE);
+
+                if (showRationale) {
+                    // do something here to handle degraded mode
+                } else {
+                    Toast.makeText(this, "PHONE CALL permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private void callSupplierPhone() {
+        String supplierPhone = mSupplierPhoneEditText.getText().toString();
+        Intent phoneCall = new Intent(Intent.ACTION_CALL);
+        phoneCall.setData(Uri.parse("tel:" + supplierPhone));
+        phoneCall.putExtra(Intent.EXTRA_PHONE_NUMBER, supplierPhone);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            // Check the user to give phone call permission.
+            getPermissionToMakePhoneCall();
+        }
+        startActivity(phoneCall);
+    }
+
+    @TargetApi(23)
+    private void getPermissionToMakePhoneCall() {
+        shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE);
+        requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, MY_PERMISSION_FOR_PHONE_CALL);
     }
 
 }

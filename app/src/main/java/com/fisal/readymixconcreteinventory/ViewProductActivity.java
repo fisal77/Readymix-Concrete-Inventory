@@ -1,5 +1,6 @@
 package com.fisal.readymixconcreteinventory;
 
+import android.annotation.TargetApi;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -7,7 +8,9 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,9 +19,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Displays list of readymix concrete that were entered and stored in the app.
@@ -31,6 +37,18 @@ public class ViewProductActivity extends AppCompatActivity implements
 
     /** Adapter for the ListView */
     ReadymixCursorAdapter mCursorAdapter;
+
+    /**
+     * Converting image from/to SQLite DB and store it
+     */
+    private Bitmap mBitmap;
+    private byte[] mPhoto;
+
+    /**
+     * Dummy image
+     */
+    ImageView img;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +113,12 @@ public class ViewProductActivity extends AppCompatActivity implements
         values.put(ReadymixEntry.COLUMN_READYMIX_NAME, "Fiber-reinforced");
         values.put(ReadymixEntry.COLUMN_READYMIX_PRICE, 120);
         values.put(ReadymixEntry.COLUMN_READYMIX_QUANTITY, 300);
+      //  img.setImageResource(R.drawable.ic_action_add_image);
+    //    mPhoto = imageToDB(mBitmap);
+        values.put(ReadymixEntry.COLUMN_PRODUCT_IMAGE, (byte[]) null);
+        values.put(ReadymixEntry.COLUMN_SUPPLIER_NAME, ReadymixEntry.SRMCC_SUPPLIER);
+        values.put(ReadymixEntry.COLUMN_SUPPLIER_EMAIL, "sales@srmcc.com.sa");
+        values.put(ReadymixEntry.COLUMN_SUPPLIER_PHONE, "966 126407777");
 
         // Insert a new row for Fiber-reinforced product into the provider using the ContentResolver.
         // Use the {@link ReadymixEntry#CONTENT_URI} to indicate that we want to insert
@@ -103,6 +127,16 @@ public class ViewProductActivity extends AppCompatActivity implements
         Uri newUri = getContentResolver().insert(ReadymixEntry.CONTENT_URI, values);
 
         Log.v("ViewProductActivity", "New row ID " + newUri);
+    }
+
+    //Convert bitmap to bytes
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    private byte[] imageToDB(Bitmap b) {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.PNG, 0, bos);
+        return bos.toByteArray();
+
     }
 
     /**

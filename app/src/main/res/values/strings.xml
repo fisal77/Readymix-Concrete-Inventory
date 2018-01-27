@@ -34,4 +34,5 @@
     <string name="delete_dialog_msg">Delete this readymix product?</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="sale">Sale</string>
 </resources>
