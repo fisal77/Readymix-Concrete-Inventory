@@ -40,7 +40,7 @@
             <EditText
                 android:id="@+id/edit_readymix_price"
                 android:hint="@string/hint_price"
-                android:inputType="textCapWords"
+                android:inputType="number"
                 style="@style/EditorFieldStyle" />
 
 
@@ -65,7 +65,7 @@
             <EditText
                 android:id="@+id/edit_readymix_quantity"
                 android:hint="@string/hint_quantity"
-                android:inputType="textCapWords"
+                android:inputType="number"
                 android:layout_toRightOf="@+id/decreaseQuantity"
                 android:layout_toEndOf="@+id/decreaseQuantity"
                 style="@style/QuantityEditorFieldStyle" />
@@ -91,8 +91,9 @@
 
             <ImageView
                 android:id="@+id/edit_readymix_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="10dp"
                 android:src="@drawable/ic_action_add_image"
                 android:clickable="true"
                 android:focusable="true"
@@ -134,22 +135,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <!-- Supplier Email field -->
-            <ImageButton
+            <ImageView
                 android:id="@+id/emailImageButton"
-                android:layout_width="48dp"
+                android:layout_width="50dp"
                 android:layout_height="48dp"
-                android:layout_toRightOf="@+id/edit_supplier_email"
-                android:layout_toEndOf="@+id/edit_supplier_email"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 app:srcCompat="@android:drawable/ic_dialog_email" />
             <EditText
                 android:id="@+id/edit_supplier_email"
-                style="@style/EmailEditorFieldStyle"
-                android:clickable="false"
-                android:cursorVisible="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
+                style="@style/EmailAndPhoneEditorFieldStyle"
                 android:hint="@string/hint_supplier_email"
-                android:inputType="textCapWords" />
+                android:layout_toRightOf="@+id/emailImageButton"
+                android:layout_toEndOf="@+id/emailImageButton"
+                android:inputType="textEmailAddress"
+                 />
 
         </RelativeLayout>
 
@@ -157,24 +160,29 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/phoneImageButton"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_alignParentLeft="true"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    app:srcCompat="@android:drawable/ic_menu_call"
+                    android:layout_alignParentStart="true" />
+
             <!-- Supplier Phone field -->
             <EditText
                 android:id="@+id/edit_supplier_phone"
                 android:hint="@string/hint_supplier_phone"
-                android:clickable="false"
-                android:cursorVisible="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:inputType="textCapWords"
-                style="@style/PhoneEditorFieldStyle" />
+                android:layout_toRightOf="@+id/phoneImageButton"
+                android:layout_toEndOf="@+id/phoneImageButton"
+                android:inputType="phone"
+                style="@style/EmailAndPhoneEditorFieldStyle"
+                 />
 
-            <ImageButton
-                android:id="@+id/phoneImageButton"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_toRightOf="@+id/edit_supplier_phone"
-                android:layout_toEndOf="@+id/edit_supplier_phone"
-                app:srcCompat="@android:drawable/ic_menu_call" />
+
         </RelativeLayout>
 
         </LinearLayout>

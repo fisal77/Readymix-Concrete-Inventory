@@ -1,27 +1,26 @@
-package com.fisal.readymixconcreteinventory;
+package com.fisal.readymixconcreteinventory.fragments;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.CursorLoader;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,25 +29,22 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.fisal.readymixconcreteinventory.R;
 import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
 
 import java.io.ByteArrayOutputStream;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
- * Allows user to create a new readymix concrete product or edit an existing one.
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link AddInventoryFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link AddInventoryFragment#newInstance} factory method to
+ * create an instance of this fragment.
  */
-public class EditProductActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    /**
-     * Identifier for the readymix product data loader
-     */
-    private static final int EXISTING_READYMIX_LOADER = 0;
-
-    /**
-     * Content URI for the existing readymix product (null if it's a new readymix product)
-     */
-    private Uri mCurrentReadymixUri;
+public class AddInventoryFragment extends Fragment {
 
     /**
      * EditText field to enter the readymix's name
@@ -96,6 +92,8 @@ public class EditProductActivity extends AppCompatActivity
     private Button decreaseQuantityBtn;
     private Button increaseQuantityBtn;
 
+    private Button saveButton;
+
     /**
      * Array strings for supplier's email and phone. All both linked to the main supplier's name array.
      * When user select the main array the others will be changed as same order.
@@ -110,12 +108,8 @@ public class EditProductActivity extends AppCompatActivity
      * {@link ReadymixEntry#BINLADEN_SUPPLIER}.
      */
     private String mSupplierName = ReadymixEntry.OTHER_SUPPLIER;
-    //private String mSupplierEmail;
-    //private String mSupplierPhone;
 
-    /**
-     * Boolean flag that keeps track of whether the readymix product has been edited (true) or not (false)
-     */
+    /** Boolean flag that keeps track of whether the readymix product has been edited (true) or not (false) */
     private boolean mReadymixProductHasChanged = false;
 
     /**
@@ -130,30 +124,67 @@ public class EditProductActivity extends AppCompatActivity
         }
     };
 
+
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    private OnFragmentInteractionListener mListener;
+
+    public AddInventoryFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment AddInventoryFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static AddInventoryFragment newInstance(String param1, String param2) {
+        AddInventoryFragment fragment = new AddInventoryFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_product);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
 
-        // Examine the intent that was used to launch this activity,
-        // in order to figure out if we're editing an existing readymix product by getting the URI from the selected product.
-        Intent intent = getIntent();
-        mCurrentReadymixUri = intent.getData();
-
-        // Initialize a loader to read the existing readymix product data from the database
-        // and display the current values in the editor
-        getLoaderManager().initLoader(EXISTING_READYMIX_LOADER, null, this);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_add_inventory, container, false);
 
         // Find all relevant views that we will need to read user input from
-        mNameEditText = (EditText) findViewById(R.id.edit_readymix_name);
-        mPriceEditText = (EditText) findViewById(R.id.edit_readymix_price);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_readymix_quantity);
-        mProductImageView = (ImageView) findViewById(R.id.edit_readymix_image);
-        mSupplierNameSpinner = (Spinner) findViewById(R.id.spinner_supplier_name);
-        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
-        mSupplierPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
-        increaseQuantityBtn = (Button) findViewById(R.id.increaseQuantity);
-        decreaseQuantityBtn = (Button) findViewById(R.id.decreaseQuantity);
+        mNameEditText = (EditText) view.findViewById(R.id.edit_readymix_name);
+        mPriceEditText = (EditText) view.findViewById(R.id.edit_readymix_price);
+        mQuantityEditText = (EditText) view.findViewById(R.id.edit_readymix_quantity);
+        mProductImageView = (ImageView) view.findViewById(R.id.edit_readymix_image);
+        mSupplierNameSpinner = (Spinner) view.findViewById(R.id.spinner_supplier_name);
+        mSupplierEmailEditText = (EditText) view.findViewById(R.id.edit_supplier_email);
+        mSupplierPhoneEditText = (EditText) view.findViewById(R.id.edit_supplier_phone);
+        increaseQuantityBtn = (Button) view.findViewById(R.id.increaseQuantity);
+        decreaseQuantityBtn = (Button) view.findViewById(R.id.decreaseQuantity);
+        saveButton = (Button) view.findViewById(R.id.action_save_button);
 
         // Array strings for supplier's email and phone. All both linked to the main supplier's name array.
         // When user select the main array the others will be changed as same order.
@@ -222,8 +253,16 @@ public class EditProductActivity extends AppCompatActivity
                 }
             }
         });
-    }
 
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveReadymix();
+            }
+        });
+
+        return view;
+    }
 
     /**
      * Setup the dropdown spinner that allows the user to select the supplier details of the readymix.
@@ -231,14 +270,14 @@ public class EditProductActivity extends AppCompatActivity
     private void setupSpinner() {
         // Create adapter for spinner. The list options are from the String array it will use
         // the spinner will use the default layout
-        ArrayAdapter supplierNameSpinnerAdapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter supplierNameSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.array_supplier_name_options, android.R.layout.simple_spinner_item);
 
         // Array adapters for supplier's email and phone. All both linked to the main supplier's name array adapter.
         // When user select the main array the others will be changed as same order.
-        final ArrayAdapter supplierEmailEditTextAdapter = ArrayAdapter.createFromResource(this,
+        final ArrayAdapter supplierEmailEditTextAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.array_supplier_email_options, android.R.layout.simple_list_item_1);
-        final ArrayAdapter supplierPhoneEditTextAdapter = ArrayAdapter.createFromResource(this,
+        final ArrayAdapter supplierPhoneEditTextAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.array_supplier_phone_options, android.R.layout.simple_list_item_1);
 
         // Specify dropdown layout style - simple list view with 1 item per line
@@ -292,7 +331,7 @@ public class EditProductActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case 2:
                 if (resultCode == RESULT_OK) {
@@ -308,14 +347,15 @@ public class EditProductActivity extends AppCompatActivity
     }
 
 
-    //Convert and resize our image to 400dp for faster uploading our images to DB
+    //COnvert and resize our image to 400dp for faster uploading our images to DB
     protected Bitmap decodeUri(Uri selectedImage, int REQUIRED_SIZE) {
 
         try {
+
             // Decode image size
             BitmapFactory.Options o = new BitmapFactory.Options();
             o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o);
+            BitmapFactory.decodeStream(getContext().getContentResolver().openInputStream(selectedImage), null, o);
 
             // The new size we want to scale to
             // final int REQUIRED_SIZE =  size;
@@ -336,7 +376,7 @@ public class EditProductActivity extends AppCompatActivity
             // Decode with inSampleSize
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize = scale;
-            return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
+            return BitmapFactory.decodeStream(getContext().getContentResolver().openInputStream(selectedImage), null, o2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -355,7 +395,7 @@ public class EditProductActivity extends AppCompatActivity
     /**
      * Get user input from editor and save readymix concrete product into database.
      */
-    private void updateReadymixProduct() {
+    private void saveReadymix() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -375,16 +415,16 @@ public class EditProductActivity extends AppCompatActivity
         String supplierEmailString = mSupplierEmailEditText.getText().toString();
         String supplierPhoneString = mSupplierPhoneEditText.getText().toString();
 
-        // and check if all the fields in the EditProductActivity are blank
-        if (mCurrentReadymixUri == null ||
-                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
+        // Check if this is supposed to be a new readymix product
+        // and check if all the fields in the AddInventoryFragment are blank
+        if (TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
                 TextUtils.isEmpty(quantityString) || mPhoto == null ||
                 supplierNameString.equals(ReadymixEntry.OTHER_SUPPLIER) ||
                 supplierEmailString.equals("N/A") || supplierPhoneString.equals("N/A")) {
-            // Since no fields were modified, we can return early without update readymix product.
+            // Since no fields were modified, we can return early without creating a new readymix product.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             // Then display toast message that warn user.
-            Toast.makeText(this, getString(R.string.editProduct_insert_blank_fields_warning),
+            Toast.makeText(getContext(), getString(R.string.updateProduct_insert_blank_fields_warning),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -413,30 +453,27 @@ public class EditProductActivity extends AppCompatActivity
         values.put(ReadymixEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
         values.put(ReadymixEntry.COLUMN_SUPPLIER_PHONE, supplierPhoneString);
 
-        // This is an existing readymix product by adding mCurrentReadymixUri
-        // So update the readymix with content URI: mCurrentReadymixUri
-        // and pass in the new ContentValues. Pass in null for the selection and selection args
-        // because mCurrentReadymixUri will already identify the correct row in the database that
-        // we want to modify.
-        int rowsAffected = getContentResolver().update(mCurrentReadymixUri, values, null, null);
 
-        // Show a toast message depending on whether or not the update was successful.
-        if (rowsAffected == 0) {
-            // If no rows were affected, then there was an error with the update.
-            Toast.makeText(this, getString(R.string.editProduct_update_failed),
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            // Otherwise, the update was successful and we can display a toast.
-            Toast.makeText(this, getString(R.string.editProduct_update_successful),
-                    Toast.LENGTH_SHORT).show();
-        }
+            // This is a NEW product, so insert a new readymix into the provider,
+            // returning the content URI for the new readymix product.
+            Uri newUri = getContext().getContentResolver().insert(ReadymixEntry.CONTENT_URI, values);
+
+            // Show a toast message depending on whether or not the insertion was successful.
+            if (newUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(getContext(), getString(R.string.editProduct_insert_new_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(getContext(), getString(R.string.editProduct_insert_new_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
     }
 
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_edit_product.xml file.
+        // Inflate the menu options from the res/menu/menu_add_inventory.xml file.
         // This adds menu items to the app bar.
-        getMenuInflater().inflate(R.menu.menu_edit_product, menu);
+        getActivity().getMenuInflater().inflate(R.menu.menu_add_inventory, menu);
         return true;
     }
 
@@ -446,22 +483,17 @@ public class EditProductActivity extends AppCompatActivity
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Update existing readymix product to database
-                updateReadymixProduct();
+                // Save new readymix product to database
+                saveReadymix();
                 // Exit activity
-                finish();
-                return true;
-            // Respond to a click on the "Delete" menu option
-            case R.id.action_delete:
-                // Pop up confirmation dialog for deletion
-                showDeleteConfirmationDialog();
+                getActivity().finish();
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // If the readymix product hasn't changed, continue with navigating up (back) to parent activity
-                // which is {@link ViewProductActivity}.
+                // which is {@link InventoryListFragment}.
                 if (!mReadymixProductHasChanged) {
-                    NavUtils.navigateUpFromSameTask(EditProductActivity.this);
+                    NavUtils.navigateUpFromSameTask(getActivity());
                     return true;
                 }
 
@@ -473,7 +505,7 @@ public class EditProductActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(EditProductActivity.this);
+                                NavUtils.navigateUpFromSameTask(getActivity());
                             }
                         };
 
@@ -488,11 +520,10 @@ public class EditProductActivity extends AppCompatActivity
     /**
      * This method is called when the back button is pressed.
      */
-    @Override
     public void onBackPressed() {
-        // If the pet hasn't changed, continue with handling back button press
+        // If the readymix product hasn't entered/changed, continue with handling back button press
         if (!mReadymixProductHasChanged) {
-            super.onBackPressed();
+             super.getActivity().onBackPressed();
             return;
         }
 
@@ -503,7 +534,7 @@ public class EditProductActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // User clicked "Discard" button, close the current activity.
-                        finish();
+                        getActivity().finish();
                     }
                 };
 
@@ -511,105 +542,6 @@ public class EditProductActivity extends AppCompatActivity
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // Since the EditProductActivity shows all readymix product attributes, define a projection that contains
-        // all columns from the readymix product table
-        String[] projection = {
-                ReadymixEntry._ID,
-                ReadymixEntry.COLUMN_READYMIX_NAME,
-                ReadymixEntry.COLUMN_READYMIX_PRICE,
-                ReadymixEntry.COLUMN_READYMIX_QUANTITY,
-                ReadymixEntry.COLUMN_SUPPLIER_NAME,
-                ReadymixEntry.COLUMN_SUPPLIER_EMAIL,
-                ReadymixEntry.COLUMN_SUPPLIER_PHONE,
-                ReadymixEntry.COLUMN_PRODUCT_IMAGE};
-
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this, // Parent activity context
-                mCurrentReadymixUri,   // Provider content URI to query
-                projection,                  // Columns to include in the resulting Cursor
-                null,               // The columns for the WHERE clause - Selection criteria
-                null,           // The values for the WHERE clause - Selection criteria
-                null);                   // The sort order for the returned rows
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        // Bail early if the cursor is null or there is less than 1 row in the cursor
-        if (cursor == null || cursor.getCount() < 1) {
-            return;
-        }
-
-        // Proceed with moving to the first row of the cursor and reading data from it
-        // (This should be the only row in the cursor)
-        if (cursor.moveToFirst()) {
-            // Find the columns of readymix product attributes that we're interested in
-            int nameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_READYMIX_QUANTITY);
-            int imageColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_PRODUCT_IMAGE);
-            int supplierNameColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_NAME);
-            int supplierEmailColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_EMAIL);
-            int supplierPhoneColumnIndex = cursor.getColumnIndex(ReadymixEntry.COLUMN_SUPPLIER_PHONE);
-
-            // Extract out the value from the Cursor for the given column index
-            String readymixName = cursor.getString(nameColumnIndex);
-            int readymixPrice = cursor.getInt(priceColumnIndex);
-            int readymixQuantity = cursor.getInt(quantityColumnIndex);
-            byte[] currentImage = cursor.getBlob(imageColumnIndex);
-            String readymixSupplierName = cursor.getString(supplierNameColumnIndex);
-            String readymixSupplierEmail = cursor.getString(supplierEmailColumnIndex);
-            String readymixSupplierPhone = cursor.getString(supplierPhoneColumnIndex);
-
-            // Update the views on the screen with the values from the database
-            mNameEditText.setText(readymixName);
-            mPriceEditText.setText(Integer.toString(readymixPrice));
-            mQuantityEditText.setText(Integer.toString(readymixQuantity));
-            // mSupplierNameSpinner.getSelectedItem();
-            mSupplierEmailEditText.setText(readymixSupplierEmail);
-            mSupplierPhoneEditText.setText(readymixSupplierPhone);
-            if (!(currentImage == null)) {
-                mProductImageView.setImageBitmap(convertToBitmap(currentImage));
-            } else {
-                mProductImageView.setImageResource(R.drawable.ic_action_add_image);
-            }
-
-            // readymixSupplierName is a dropdown spinner, so map the constant value from the database
-            // into one of the dropdown options (0 is Other Supplier, 1 is SRMCC, 2 is CEMEX and so on...).
-            // Then call setSelection() so that option is displayed on screen as the current selection.
-            switch (readymixSupplierName) {
-                case ReadymixEntry.SRMCC_SUPPLIER:
-                    mSupplierNameSpinner.setSelection(1);
-                    break;
-                case ReadymixEntry.CEMEX_SUPPLIER:
-                    mSupplierNameSpinner.setSelection(2);
-                    break;
-                case ReadymixEntry.UBINTO_SUPPLIER:
-                    mSupplierNameSpinner.setSelection(3);
-                    break;
-                case ReadymixEntry.BINLADEN_SUPPLIER:
-                    mSupplierNameSpinner.setSelection(4);
-                    break;
-                default:
-                    mSupplierNameSpinner.setSelection(0);
-
-            }
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // If the loader is invalidated, clear out all the data from the input fields.
-        mNameEditText.setText("");
-        mPriceEditText.setText("");
-        mQuantityEditText.setText("");
-        mSupplierNameSpinner.setSelection(0);
-        mSupplierEmailEditText.setText("");
-        mSupplierPhoneEditText.setText("");
-        mProductImageView.setImageResource(R.drawable.ic_action_add_image);
-    }
 
     //get bitmap image from currentImage byte array
     private Bitmap convertToBitmap(byte[] currentImage) {
@@ -628,7 +560,7 @@ public class EditProductActivity extends AppCompatActivity
             DialogInterface.OnClickListener discardButtonClickListener) {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the postivie and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
@@ -647,56 +579,44 @@ public class EditProductActivity extends AppCompatActivity
     }
 
 
-    /**
-     * Prompt the user to confirm that they want to delete this readymix product.
-     */
-    private void showDeleteConfirmationDialog() {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.delete_dialog_msg);
-        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the readymix product.
-                deleteProduct();
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the readymix product.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
 
-        // Create and show the AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        //mListener = null;
+        onBackPressed();
     }
 
     /**
-     * Perform the deletion of the readymix product in the database.
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
      */
-    private void deleteProduct() {
-        // Perform the delete on an existing readymix product.
-        // Call the ContentResolver to delete the readymix product at the given content URI.
-        // Pass in null for the selection and selection args because the mCurrentReadymixUri
-        // content URI already identifies the readymix product that we want.
-        int rowsDeleted = getContentResolver().delete(mCurrentReadymixUri, null, null);
-
-        // Show a toast message depending on whether or not the delete was successful.
-        if (rowsDeleted == 0) {
-            // If no rows were deleted, then there was an error with the delete.
-            Toast.makeText(this, getString(R.string.editProduct_delete_readymix_failed),
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            // Otherwise, the delete was successful and we can display a toast.
-            Toast.makeText(this, getString(R.string.editProduct_delete_readymix_successful),
-                    Toast.LENGTH_SHORT).show();
-        }
-        // Close the activity
-        finish();
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 }

@@ -4,6 +4,7 @@
     package="com.fisal.readymixconcreteinventory">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,16 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewProductActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".EditProductActivity"
-           android:parentActivityName=".ViewProductActivity"
+        <activity
+            android:name=".EditProductActivity"
+            android:parentActivityName=".ViewProductActivity"
             tools:targetApi="jelly_bean">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -28,10 +24,18 @@
         </activity>
 
         <provider
-            android:authorities="com.fisal.readymixconcreteinventory"
             android:name=".data.ReadymixProvider"
-            android:exported="false"/>
+            android:authorities="com.fisal.readymixconcreteinventory"
+            android:exported="false" />
 
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ViewProductDetailsActivity"></activity>
     </application>
 
 </manifest>

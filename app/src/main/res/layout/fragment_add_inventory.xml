@@ -1,0 +1,216 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frag2_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context="com.fisal.readymixconcreteinventory.fragments.AddInventoryFragment">
+
+
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_margin"
+        android:isScrollContainer="true" >
+
+        <!-- Overview category -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Label -->
+            <TextView
+                android:text="@string/category_overview"
+                style="@style/CategoryStyle" />
+
+            <!-- Input fields -->
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:paddingLeft="4dp"
+                android:orientation="vertical">
+
+                <!-- Name field -->
+                <EditText
+                    android:id="@+id/edit_readymix_name"
+                    android:hint="@string/hint_readymix_name"
+                    android:inputType="textCapWords"
+                    style="@style/EditorFieldStyle" />
+
+                <!-- Price field -->
+                <EditText
+                    android:id="@+id/edit_readymix_price"
+                    android:hint="@string/hint_price"
+                    android:inputType="number"
+                    style="@style/EditorFieldStyle" />
+
+
+                <!-- Measurement category -->
+                <LinearLayout
+                    android:id="@+id/container_measurement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Quantity field -->
+                    <RelativeLayout
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingLeft="4dp">
+
+                        <Button
+                            android:id="@+id/decreaseQuantity"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:text="-" />
+                        <EditText
+                            android:id="@+id/edit_readymix_quantity"
+                            android:hint="@string/hint_quantity"
+                            android:inputType="number"
+                            android:layout_toRightOf="@+id/decreaseQuantity"
+                            android:layout_toEndOf="@+id/decreaseQuantity"
+                            style="@style/QuantityEditorFieldStyle" />
+
+                        <!-- Units for cubic meter (m3) -->
+                        <TextView
+                            android:id="@+id/label_cubic_meter_units"
+                            style="@style/EditorUnitsStyle"
+                            android:layout_toEndOf="@+id/edit_readymix_quantity"
+                            android:layout_toRightOf="@+id/edit_readymix_quantity"
+                            android:text="@string/unit_cubic_meter" />
+                        <Button
+                            android:id="@+id/increaseQuantity"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_toRightOf="@+id/label_cubic_meter_units"
+                            android:layout_toEndOf="@+id/label_cubic_meter_units"
+                            android:text="+" />
+
+
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/edit_readymix_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_action_add_image"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:scaleType="centerCrop" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Supplier Details category -->
+        <LinearLayout
+            android:id="@+id/container_supplier_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Label -->
+            <TextView
+                android:text="@string/category_supplier_details"
+                style="@style/CategoryStyle" />
+
+            <!-- Input field -->
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <!-- Supplier name drop-down spinner -->
+                <Spinner
+                    android:id="@+id/spinner_supplier_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:focusedByDefault="false"
+                    android:paddingRight="16dp"
+                    android:spinnerMode="dropdown" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/emailImageButton"
+                        android:layout_width="50dp"
+                        android:layout_height="48dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        app:srcCompat="@android:drawable/ic_dialog_email" />
+                    <!-- Supplier Email field -->
+                    <EditText
+                        android:id="@+id/edit_supplier_email"
+                        style="@style/EmailAndPhoneEditorFieldStyle"
+                        android:layout_toRightOf="@+id/emailImageButton"
+                        android:layout_toEndOf="@+id/emailImageButton"
+                        android:clickable="false"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:hint="@string/hint_supplier_email"
+                        android:inputType="textEmailAddress" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/phoneImageButton"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignParentLeft="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        app:srcCompat="@android:drawable/ic_menu_call"
+                        android:layout_alignParentStart="true" />
+                    <!-- Supplier Phone field -->
+                    <EditText
+                        android:id="@+id/edit_supplier_phone"
+                        android:hint="@string/hint_supplier_phone"
+                        android:layout_toRightOf="@+id/phoneImageButton"
+                        android:layout_toEndOf="@+id/phoneImageButton"
+                        android:clickable="false"
+                        android:cursorVisible="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:inputType="phone"
+                        style="@style/EditorFieldStyle" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/action_save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_save"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</FrameLayout>

@@ -24,7 +24,7 @@ import com.fisal.readymixconcreteinventory.data.ReadymixContract.ReadymixEntry;
  * that uses a {@link Cursor} of readymix product data as its data source. This adapter knows
  * how to create list items for each row of readymix product data in the {@link Cursor}.
  */
-class ReadymixCursorAdapter extends CursorAdapter {
+public class ReadymixCursorAdapter extends CursorAdapter {
 
     private int quantity;
 
