@@ -8,7 +8,6 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -97,13 +96,6 @@ public class EditProductActivity extends AppCompatActivity
     private Button increaseQuantityBtn;
 
     /**
-     * Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-     * When user select the main array the others will be changed as same order.
-     */
-    private String[] mSupplierEmailArray;
-    private String[] mSupplierPhoneArray;
-
-    /**
      * Supplier name of the readymix concrete. The possible valid values are in the ReadymixContract.java file:
      * {@link ReadymixEntry#OTHER_SUPPLIER}, {@link ReadymixEntry#SRMCC_SUPPLIER},
      * {@link ReadymixEntry#CEMEX_SUPPLIER}, {@link ReadymixEntry#UBINTO_SUPPLIER},
@@ -154,12 +146,6 @@ public class EditProductActivity extends AppCompatActivity
         mSupplierPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
         increaseQuantityBtn = (Button) findViewById(R.id.increaseQuantity);
         decreaseQuantityBtn = (Button) findViewById(R.id.decreaseQuantity);
-
-        // Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-        // When user select the main array the others will be changed as same order.
-        Resources res = getResources();
-        mSupplierEmailArray = res.getStringArray(R.array.array_supplier_email_options);
-        mSupplierPhoneArray = res.getStringArray(R.array.array_supplier_phone_options);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -302,6 +288,8 @@ public class EditProductActivity extends AppCompatActivity
 
                         mBitmap = decodeUri(choosenImage, 400);
                         mProductImageView.setImageBitmap(mBitmap);
+                    } else {
+                        mProductImageView.setImageBitmap(convertToBitmap(mPhoto));
                     }
                 }
         }
@@ -364,12 +352,12 @@ public class EditProductActivity extends AppCompatActivity
         if (mQuantityEditText.getText().equals("")) {
             mQuantityEditText.setText("0");
         }
-
         if (!(mBitmap == null)) {
             mPhoto = imageToDB(mBitmap);
         } else {
             mPhoto = null;
         }
+        mProductImageView.setImageBitmap(mBitmap);
 
         String supplierNameString = mSupplierNameSpinner.getSelectedItem().toString();
         String supplierEmailString = mSupplierEmailEditText.getText().toString();
@@ -378,7 +366,7 @@ public class EditProductActivity extends AppCompatActivity
         // and check if all the fields in the EditProductActivity are blank
         if (mCurrentReadymixUri == null ||
                 TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
-                TextUtils.isEmpty(quantityString) || mPhoto == null ||
+                TextUtils.isEmpty(quantityString) || mProductImageView == null ||
                 supplierNameString.equals(ReadymixEntry.OTHER_SUPPLIER) ||
                 supplierEmailString.equals("N/A") || supplierPhoneString.equals("N/A")) {
             // Since no fields were modified, we can return early without update readymix product.

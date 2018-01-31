@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -72,11 +72,6 @@ public class ViewProductDetailsActivity extends AppCompatActivity
      * ImageView field to view the readymix's product image
      */
     private ImageView mProductImageView;
-    /**
-     * Converting image from/to SQLite DB image column to view it
-     */
-    private Bitmap mBitmap;
-    private byte[] mPhoto;
 
     /**
      * Spinner (dropdown menu Read Only - not editable - not clickable) field to view the readymix's supplier name
@@ -94,17 +89,16 @@ public class ViewProductDetailsActivity extends AppCompatActivity
     private EditText mSupplierPhoneEditText;
 
     /**
+     * Buttons to increase and decrease quantity
+     */
+    private Button decreaseQuantityBtn;
+    private Button increaseQuantityBtn;
+
+    /**
      * Image buttons for email and call the supplier data
      */
     private ImageButton sendEmailToSupplier;
     private ImageButton phoneCallToSupplier;
-
-    /**
-     * Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-     * When user select the main array the others will be changed as same order.
-     */
-    private String[] mSupplierEmailArray;
-    private String[] mSupplierPhoneArray;
 
     /**
      * Supplier name of the readymix concrete. The possible valid values are in the ReadymixContract.java file:
@@ -113,9 +107,6 @@ public class ViewProductDetailsActivity extends AppCompatActivity
      * {@link ReadymixEntry#BINLADEN_SUPPLIER}.
      */
     private String mSupplierName = ReadymixEntry.OTHER_SUPPLIER;
-    //private String mSupplierEmail;
-    //private String mSupplierPhone;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,12 +132,50 @@ public class ViewProductDetailsActivity extends AppCompatActivity
         mSupplierPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
         sendEmailToSupplier = (ImageButton) findViewById(R.id.emailImageButton);
         phoneCallToSupplier = (ImageButton) findViewById(R.id.phoneImageButton);
+        increaseQuantityBtn = (Button) findViewById(R.id.increaseQuantity);
+        decreaseQuantityBtn = (Button) findViewById(R.id.decreaseQuantity);
 
-        // Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-        // When user select the main array the others will be changed as same order.
-        Resources res = getResources();
-        mSupplierEmailArray = res.getStringArray(R.array.array_supplier_email_options);
-        mSupplierPhoneArray = res.getStringArray(R.array.array_supplier_phone_options);
+        increaseQuantityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mQuantityEditText.getText().toString().isEmpty()) {
+                    mQuantityEditText.setText("0");
+                }
+                int quantityFromEditText = Integer.parseInt(mQuantityEditText.getText().toString());
+                if (quantityFromEditText == 650) {
+                    return;
+                }
+                if (quantityFromEditText >= 0) {
+                    quantityFromEditText = quantityFromEditText + 1;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+                if (quantityFromEditText < 0) {
+                    quantityFromEditText = 1;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+            }
+        });
+
+        decreaseQuantityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mQuantityEditText.getText().toString().isEmpty()) {
+                    mQuantityEditText.setText("0");
+                }
+                int quantityFromEditText = Integer.parseInt(mQuantityEditText.getText().toString());
+                if (quantityFromEditText == 0) {
+                    return;
+                }
+                if (quantityFromEditText > 0) {
+                    quantityFromEditText = quantityFromEditText - 1;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+                if (quantityFromEditText < 1) {
+                    quantityFromEditText = 0;
+                    mQuantityEditText.setText(String.valueOf(quantityFromEditText));
+                }
+            }
+        });
 
         setupSpinner();
 

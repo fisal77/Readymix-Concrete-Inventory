@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,8 +39,6 @@ import static android.app.Activity.RESULT_OK;
  * Activities that contain this fragment must implement the
  * {@link AddInventoryFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AddInventoryFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class AddInventoryFragment extends Fragment {
 
@@ -92,14 +88,10 @@ public class AddInventoryFragment extends Fragment {
     private Button decreaseQuantityBtn;
     private Button increaseQuantityBtn;
 
-    private Button saveButton;
-
     /**
-     * Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-     * When user select the main array the others will be changed as same order.
+     * Save button to insert into DB
      */
-    private String[] mSupplierEmailArray;
-    private String[] mSupplierPhoneArray;
+    private Button saveButton;
 
     /**
      * Supplier name of the readymix concrete. The possible valid values are in the ReadymixContract.java file:
@@ -124,48 +116,15 @@ public class AddInventoryFragment extends Fragment {
         }
     };
 
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     public AddInventoryFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddInventoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AddInventoryFragment newInstance(String param1, String param2) {
-        AddInventoryFragment fragment = new AddInventoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -185,12 +144,6 @@ public class AddInventoryFragment extends Fragment {
         increaseQuantityBtn = (Button) view.findViewById(R.id.increaseQuantity);
         decreaseQuantityBtn = (Button) view.findViewById(R.id.decreaseQuantity);
         saveButton = (Button) view.findViewById(R.id.action_save_button);
-
-        // Array strings for supplier's email and phone. All both linked to the main supplier's name array.
-        // When user select the main array the others will be changed as same order.
-        Resources res = getResources();
-        mSupplierEmailArray = res.getStringArray(R.array.array_supplier_email_options);
-        mSupplierPhoneArray = res.getStringArray(R.array.array_supplier_phone_options);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -470,13 +423,6 @@ public class AddInventoryFragment extends Fragment {
             }
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_add_inventory.xml file.
-        // This adds menu items to the app bar.
-        getActivity().getMenuInflater().inflate(R.menu.menu_add_inventory, menu);
-        return true;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
@@ -542,13 +488,6 @@ public class AddInventoryFragment extends Fragment {
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
-
-    //get bitmap image from currentImage byte array
-    private Bitmap convertToBitmap(byte[] currentImage) {
-        return BitmapFactory.decodeByteArray(currentImage, 0, currentImage.length);
-    }
-
-
     /**
      * Show a dialog that warns the user there are unsaved changes that will be lost
      * if they continue leaving the Edit Product Activity.
@@ -576,15 +515,6 @@ public class AddInventoryFragment extends Fragment {
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

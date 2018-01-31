@@ -14,13 +14,14 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".EditProductActivity"
-            android:parentActivityName=".ViewProductActivity"
+            android:label="@string/InventoryEdit"
+            android:parentActivityName=".ViewProductDetailsActivity"
             tools:targetApi="jelly_bean">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ViewProductActivity" />
+                android:value=".ViewProductDetailsActivity" />
         </activity>
 
         <provider
@@ -35,7 +36,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ViewProductDetailsActivity"></activity>
+        <activity android:name=".ViewProductDetailsActivity"
+            android:label="@string/product_details"
+            android:parentActivityName=".MainActivity"
+            tools:targetApi="jelly_bean">
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>

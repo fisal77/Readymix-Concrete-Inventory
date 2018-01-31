@@ -43,4 +43,6 @@
     <string name="action_edit">Edit Product</string>
     <string name="editProduct_insert_blank_fields_warning">Blank fields not allowed. Please try update again.</string>
     <string name="updateProduct_insert_blank_fields_warning">Blank fields not allowed. Please try enter again.</string>
+    <string name="InventoryEdit">Inventory Edit</string>
+    <string name="product_details">Product Details</string>
 </resources>
